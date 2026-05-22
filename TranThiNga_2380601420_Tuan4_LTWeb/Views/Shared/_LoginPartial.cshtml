@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TranThiNga_2380601420_Tuan4_LTWeb.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Tài khoản">
+            <i class="bi bi-person-circle"></i> @UserManager.GetUserName(User)
+        </a>
+    </li>
+    <li class="nav-item">
+        <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout"
+              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="nav-link btn btn-link border-0 text-warning px-2">
+                Đăng xuất
+            </button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Đăng ký</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-warning" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a>
+    </li>
+}

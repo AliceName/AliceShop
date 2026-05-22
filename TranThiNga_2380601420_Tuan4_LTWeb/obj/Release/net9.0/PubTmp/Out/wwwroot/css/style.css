@@ -1,0 +1,41 @@
+/* ALICE STORE – theme */
+body.bg-light {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.navbar-dark .nav-link.active {
+    color: #ffc107 !important;
+    font-weight: 600;
+}
+
+.navbar-dark .nav-link:hover {
+    color: #ffc107;
+}
+
+.card .price {
+    font-size: 1rem;
+}
+
+.product-card-store {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.product-card-store:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.product-card-store .card-img-top {
+    height: 220px;
+    object-fit: cover;
+}
+
+#heroCarousel .carousel-item img {
+    max-height: 400px;
+    object-fit: cover;
+}
+
+.admin-page-title {
+    border-bottom: 2px solid #ffc107;
+    padding-bottom: 0.5rem;
+}

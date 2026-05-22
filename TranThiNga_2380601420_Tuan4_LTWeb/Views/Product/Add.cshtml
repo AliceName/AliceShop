@@ -1,0 +1,160 @@
+﻿@model TranThiNga_2380601420_Tuan4_LTWeb.Models.Product
+
+@{
+    ViewData["Title"] = "Add Product";
+}
+
+<h2 class="mb-4">Add Product</h2>
+
+<form asp-action="Add" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Price</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Description</label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Category</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+            <option value="">-- Select category --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <!-- Single button for adding images (supports multi-select and repeated single adds) -->
+    <div class="mb-3">
+        <label class="form-label">Product Images</label>
+        <div class="d-flex gap-2 mb-2">
+            <button type="button" id="btnSelectImages" class="btn btn-outline-primary">
+                Select Images
+            </button>
+            <div class="form-text ms-2">You can select multiple files at once or click repeatedly to add more. First image will be used as thumbnail.</div>
+        </div>
+
+        <!-- hidden file input that actually holds files to submit -->
+        <input type="file" id="imageFiles" name="imageFiles" accept="image/*" multiple style="display:none;" />
+
+        <!-- Preview thumbnails for selected images -->
+        <div id="newPreview" class="d-flex flex-wrap gap-2"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+
+@section Scripts {
+    <script>
+        (function () {
+            const btnSelect = document.getElementById('btnSelectImages');
+            const realInput = document.getElementById('imageFiles');
+            const newPreview = document.getElementById('newPreview');
+
+            // DataTransfer lets us manage files before submit
+            const dt = new DataTransfer();
+
+            function createThumb(file, idx) {
+                const url = URL.createObjectURL(file);
+
+                const wrap = document.createElement('div');
+                wrap.className = 'position-relative';
+                wrap.style.width = '120px';
+
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = file.name;
+                img.className = 'img-thumbnail';
+                img.style.width = '120px';
+                img.style.height = '90px';
+                img.style.objectFit = 'cover';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0 m-1 remove-new';
+                btn.innerText = '×';
+                btn.title = 'Remove';
+                btn.dataset.index = idx;
+
+                btn.addEventListener('click', function () {
+                    removeFileAtIndex(parseInt(this.dataset.index));
+                });
+
+                wrap.appendChild(img);
+                wrap.appendChild(btn);
+
+                img.onload = () => URL.revokeObjectURL(url);
+                return wrap;
+            }
+
+            function refreshPreview() {
+                newPreview.innerHTML = '';
+                for (let i = 0; i < dt.files.length; i++) {
+                    newPreview.appendChild(createThumb(dt.files[i], i));
+                }
+                // propagate changes to actual input so model binder receives files
+                realInput.files = dt.files;
+            }
+
+            function removeFileAtIndex(idx) {
+                const files = Array.from(dt.files);
+                files.splice(idx, 1);
+                const newDt = new DataTransfer();
+                files.forEach(f => newDt.items.add(f));
+                // replace items in original dt
+                while (dt.items.length) dt.items.remove(0);
+                for (let i = 0; i < newDt.files.length; i++) dt.items.add(newDt.files[i]);
+                refreshPreview();
+            }
+
+            // When user selects files from the file picker
+            realInput.addEventListener('change', function () {
+                const files = Array.from(this.files || []);
+                files.forEach(f => {
+                    if (!f.type.startsWith('image/')) return;
+                    dt.items.add(f);
+                });
+                // clear native input to allow re-selecting same files later
+                realInput.value = '';
+                refreshPreview();
+            });
+
+            // Button click triggers the hidden input
+            btnSelect.addEventListener('click', function () {
+                realInput.click();
+            });
+
+            // Optional: allow drag & drop into preview area
+            newPreview.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                this.classList.add('border', 'border-primary', 'rounded');
+            });
+            newPreview.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                this.classList.remove('border', 'border-primary', 'rounded');
+            });
+            newPreview.addEventListener('drop', function (e) {
+                e.preventDefault();
+                this.classList.remove('border', 'border-primary', 'rounded');
+                const files = Array.from(e.dataTransfer.files || []);
+                files.forEach(f => {
+                    if (!f.type.startsWith('image/')) return;
+                    dt.items.add(f);
+                });
+                refreshPreview();
+            });
+        })();
+    </script>
+}

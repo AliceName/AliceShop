@@ -1,0 +1,54 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="d-flex justify-content-center align-items-center py-5">
+    <div class="card shadow-sm border-0 overflow-hidden" style="max-width:500px; width:100%;">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <h3 class="mb-2 fw-bold text-dark">Chào mừng trở lại</h3>
+                <p class="text-muted small mb-0">Đăng nhập để tiếp tục</p>
+            </div>
+
+            <form method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" autocomplete="username" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" placeholder="Password" autocomplete="current-password" />
+                    <label asp-for="Input.Password">Mật khẩu</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        <label class="form-check-label text-muted small" asp-for="Input.RememberMe">Nhớ mật khẩu</label>
+                    </div>
+                    <div>
+                        <a asp-page="./ForgotPassword" class="small text-decoration-none text-warning">Quên mật khẩu?</a>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark btn-lg w-100 mb-3 rounded-pill">Đăng nhập</button>
+
+                <div class="text-center mt-4">
+                    <span class="small text-muted">Chưa có tài khoản?</span>
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="small ms-1 fw-bold text-warning text-decoration-none">Tạo tài khoản</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

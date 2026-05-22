@@ -1,0 +1,314 @@
+﻿@model TranThiNga_2380601420_Tuan4_LTWeb.Models.Product
+
+@{
+    var images = Model.Images?.Where(i => !string.IsNullOrWhiteSpace(i.Url)).Select(i => i.Url).ToList()
+                 ?? new List<string>();
+    if (!images.Any() && !string.IsNullOrWhiteSpace(Model.ImageUrl))
+    {
+        images.Add(Model.ImageUrl);
+    }
+    if (!images.Any())
+    {
+        images.Add("/images/placeholder.png");
+    }
+
+    for (int i = 0; i < images.Count; i++)
+    {
+        if (!images[i].StartsWith("/"))
+        {
+            images[i] = "/" + images[i];
+        }
+    }
+
+    var carouselId = $"productCarousel-{Model.Id}";
+    var thumbListId = $"thumbList-{Model.Id}";
+}
+
+<style>
+    /* ── Gallery wrapper ── */
+    .product-gallery {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    /* ── Thumb column (desktop) ── */
+    .thumb-column {
+        width: 72px;
+        flex: 0 0 72px;
+        max-height: 420px;
+        overflow-y: auto;
+        display: flex;
+        flex-column: column;
+        gap: 8px;
+        scrollbar-width: thin;
+    }
+
+    .thumb-btn {
+        width: 68px;
+        height: 68px;
+        padding: 2px;
+        border-radius: 4px;
+        overflow: hidden;
+        display: block;
+        flex-shrink: 0;
+        cursor: pointer;
+        border: 2px solid #dee2e6 !important;
+        background: #fff;
+        transition: border-color .15s;
+    }
+
+        .thumb-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 2px;
+        }
+
+        .thumb-btn.active {
+            border-color: #0d6efd !important;
+            box-shadow: 0 0 0 1px rgba(13,110,253,.25);
+        }
+
+    /* ── Main image area ── */
+    .main-image-wrap {
+        flex: 1 1 auto;
+        position: relative;
+    }
+
+    .main-img-frame {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        max-height: 440px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative; /* needed for absolutely-positioned nav buttons */
+    }
+
+        /* ── Carousel: ensure only one image shows at a time ── */
+        .main-img-frame .carousel,
+        .main-img-frame .carousel-inner {
+            width: 100%;
+            height: 100%;
+        }
+
+            /* Override any theme CSS that might make items flex */
+            .main-img-frame .carousel-inner .carousel-item {
+                display: none !important; /* hide all */
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .main-img-frame .carousel-inner .carousel-item.active {
+                    display: flex !important; /* show only active */
+                }
+
+        .main-img-frame .carousel-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+    /* ── Prev / Next buttons ── */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 36px;
+        height: 36px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background: rgba(255,255,255,.9);
+        border: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity .2s;
+    }
+
+    .main-img-frame:hover .carousel-control-prev,
+    .main-img-frame:hover .carousel-control-next {
+        opacity: 1;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 16px;
+        height: 16px;
+        filter: invert(1) grayscale(1) brightness(0);
+    }
+
+    /* ── Mobile thumb row ── */
+    .thumb-row-mobile {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        margin-top: 10px;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+    }
+
+        .thumb-row-mobile .thumb-btn {
+            flex: 0 0 68px;
+        }
+</style>
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="row g-0">
+
+            <!-- ════ Left: gallery ════ -->
+            <div class="col-lg-7 p-3">
+
+                <div class="product-gallery">
+
+                    <!-- Thumbnail column (hidden on mobile) -->
+                    <div class="thumb-column d-none d-md-flex flex-column" id="@thumbListId">
+                        @for (int i = 0; i < images.Count; i++)
+                        {
+                            <button type="button"
+                                    class="thumb-btn @(i == 0 ? "active" : "")"
+                                    data-carousel-target="@carouselId"
+                                    data-slide-to="@i"
+                                    aria-label="Ảnh @(i + 1)">
+                                <img src="@images[i]" alt="thumb-@i" loading="lazy" />
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Main image -->
+                    <div class="main-image-wrap">
+                        <div class="main-img-frame">
+                            <div id="@carouselId" class="carousel slide" data-bs-ride="false">
+                                <div class="carousel-inner">
+                                    @for (int i = 0; i < images.Count; i++)
+                                    {
+                                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                                            <img src="@images[i]" alt="@Model.Name" />
+                                        </div>
+                                    }
+                                </div>
+
+                                @if (images.Count > 1)
+                                {
+                                    <button class="carousel-control-prev" type="button"
+                                            data-bs-target="#@carouselId" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Trước</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button"
+                                            data-bs-target="#@carouselId" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Tiếp</span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Mobile thumbnail row -->
+                        @if (images.Count > 1)
+                        {
+                            <div class="thumb-row-mobile d-md-none">
+                                @for (int i = 0; i < images.Count; i++)
+                                {
+                                    <button type="button"
+                                            class="thumb-btn @(i == 0 ? "active" : "")"
+                                            data-carousel-target="@carouselId"
+                                            data-slide-to="@i"
+                                            aria-label="Ảnh @(i + 1)">
+                                        <img src="@images[i]" alt="thumb-@i" loading="lazy" />
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ════ Right: product info ════ -->
+            <div class="col-lg-5">
+                <div class="card-body">
+                    <h2 class="fw-bold">@Model.Name</h2>
+                    <div class="mb-3">
+                        <span class="fs-4 text-danger fw-semibold">@Model.Price.ToString("N0")₫</span>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-muted">@Model.Description</p>
+                    </div>
+                    <p class="mb-1">
+                        <strong>Danh mục:</strong>
+                        @(Model.Category?.Name ?? "Chưa phân loại")
+                    </p>
+                    <div class="mt-4 d-flex gap-2 flex-wrap">
+                        <a asp-action="Index" class="btn btn-outline-secondary">← Quay lại</a>
+                        <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning text-white">Chỉnh sửa</a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Xóa</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var carouselEl = document.getElementById('@carouselId');
+            if (!carouselEl) return;
+
+            // Lazily init Bootstrap carousel (no auto-play)
+            var bsCarousel = bootstrap.Carousel.getOrCreateInstance(carouselEl, {
+                interval: false,
+                wrap: true
+            });
+
+            // All thumb buttons across both desktop column and mobile row
+            var allThumbs = Array.from(
+                document.querySelectorAll('[data-carousel-target="@carouselId"][data-slide-to]')
+            );
+
+            function setActiveThumb(index) {
+                allThumbs.forEach(function (btn) {
+                    var to = parseInt(btn.getAttribute('data-slide-to'), 10);
+                    btn.classList.toggle('active', to === index);
+                });
+
+                // Scroll desktop thumb into view
+                var desktopList = document.getElementById('@thumbListId');
+                if (desktopList) {
+                    var activeBtns = desktopList.querySelectorAll('.thumb-btn.active');
+                    if (activeBtns.length) {
+                        activeBtns[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }
+            }
+
+            // Thumb click → slide to that index
+            allThumbs.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var to = parseInt(btn.getAttribute('data-slide-to'), 10);
+                    bsCarousel.to(to);
+                    setActiveThumb(to);   // immediate feedback
+                });
+            });
+
+            // Sync thumbs when carousel slides (e.g. via prev/next arrows)
+            carouselEl.addEventListener('slid.bs.carousel', function (e) {
+                setActiveThumb(e.to);
+            });
+
+            // Init
+            setActiveThumb(0);
+        })();
+    </script>
+}

@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} | " : "")ALICE STORE</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TranThiNga_2380601420_Tuan4_LTWeb.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand text-warning" asp-area="" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-flower2"></i> ALICE STORE
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+                           asp-area="" asp-controller="Home" asp-action="Index">Trang Chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Product" ? "active" : "")"
+                           asp-area="" asp-controller="Product" asp-action="Index">Sản phẩm</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Contact" ? "active" : "")"
+                           asp-area="" asp-controller="Home" asp-action="Contact">Liên Hệ</a>
+                    </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-warning" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Quản trị
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">
+                                        Quản lý sản phẩm
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Add">
+                                        Thêm sản phẩm
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">
+                                        Quản lý danh mục
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Add">
+                                        Thêm danh mục
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+                <form class="d-flex me-2" asp-area="" asp-controller="Product" asp-action="Index" method="get">
+                    <input class="form-control form-control-sm me-2" type="search" name="q"
+                           placeholder="Tìm trang sức..." value="@Context.Request.Query["q"]" />
+                    <button class="btn btn-outline-warning btn-sm" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                <ul class="navbar-nav align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="ShoppingCart" asp-action="Index">
+                            <i class="bi bi-cart3"></i> Giỏ hàng
+                        </a>
+                    </li>
+                    <partial name="_LoginPartial" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    @await RenderSectionAsync("Hero", required: false)
+
+    <main role="main">
+        @if (ViewContext.RouteData.Values["area"]?.ToString() == "Admin")
+        {
+            <div class="container mt-4 mb-5">
+                @RenderBody()
+            </div>
+        }
+        else
+        {
+            @RenderBody()
+        }
+    </main>
+
+    <footer class="bg-dark text-light mt-5 pt-5 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 border-end border-secondary">
+                    <h5 class="text-warning mb-4">ALICE STORE</h5>
+                    <p class="text-secondary small">
+                        Chúng tôi tự hào là thương hiệu phụ kiện hàng đầu, mang lại vẻ đẹp tự tin và sang trọng
+                        cho phụ nữ Việt Nam thông qua những mẫu trang sức tinh xảo.
+                    </p>
+                    <div class="fs-4">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light"><i class="bi bi-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 border-end border-secondary ps-md-5">
+                    <h5 class="text-uppercase text-warning mb-4 small">Liên kết</h5>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2">
+                            <a asp-area="" asp-controller="Home" asp-action="Privacy"
+                               class="text-secondary text-decoration-none">Chính sách bảo mật</a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-area="" asp-controller="Home" asp-action="Contact"
+                               class="text-secondary text-decoration-none">Liên hệ</a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-area="" asp-controller="Product" asp-action="Index"
+                               class="text-secondary text-decoration-none">Sản phẩm</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4 ps-md-5">
+                    <h5 class="text-uppercase text-warning mb-4 small">Liên hệ</h5>
+                    <p class="text-secondary small mb-2">
+                        <i class="bi bi-geo-alt me-2"></i> 123 Đường ABC, Quận 1, TP. HCM
+                    </p>
+                    <p class="text-secondary small mb-2">
+                        <i class="bi bi-telephone me-2"></i> Hotline: 1900 1234
+                    </p>
+                    <p class="text-secondary small mb-2">
+                        <i class="bi bi-envelope me-2"></i> hotro@alicestore.com
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-secondary" />
+            <div class="text-center">
+                <p class="small text-secondary mb-0">&copy; 2026 ALICE STORE - All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

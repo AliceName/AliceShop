@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Liên Hệ";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="text-uppercase fw-bold border-bottom pb-3 mb-4">Liên hệ với chúng tôi</h2>
+            <p class="text-muted">
+                Bạn có câu hỏi về sản phẩm, đơn hàng hoặc hợp tác? Hãy gửi tin nhắn — đội ngũ ALICE STORE sẽ phản hồi trong thời gian sớm nhất.
+            </p>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <p class="mb-2"><i class="bi bi-geo-alt text-warning me-2"></i> 123 Đường ABC, Quận 1, TP. HCM</p>
+                    <p class="mb-2"><i class="bi bi-telephone text-warning me-2"></i> Hotline: 1900 1234</p>
+                    <p class="mb-4"><i class="bi bi-envelope text-warning me-2"></i> hotro@alicestore.com</p>
+
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" placeholder="Nhập họ tên" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" placeholder="email@example.com" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nội dung</label>
+                            <textarea class="form-control" rows="4" placeholder="Nội dung tin nhắn..."></textarea>
+                        </div>
+                        <button type="button" class="btn btn-warning text-dark fw-semibold">Gửi tin nhắn</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <partial name="_SocialSidebar" />
+        </div>
+    </div>
+</div>

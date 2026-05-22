@@ -1,0 +1,265 @@
+﻿@model TranThiNga_2380601420_Tuan4_LTWeb.Models.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Thanh toán";
+    string NormalizeImg(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return "/images/placeholder.png";
+        return url.StartsWith("/") ? url : "/" + url;
+    }
+}
+
+<style>
+    .checkout-step {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .checkout-step.active {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .checkout-step.done {
+        background: #198754;
+        color: #fff;
+    }
+
+    .checkout-step.pending {
+        background: #e9ecef;
+        color: #6c757d;
+    }
+
+    .checkout-item-img {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+    }
+
+    .payment-option {
+        cursor: pointer;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .payment-option:has(input:checked) {
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.35);
+        background: #fffdf5;
+    }
+</style>
+
+<section class="py-4">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small mb-0">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a asp-action="Index">Giỏ hàng</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Thanh toán</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+            <div class="d-flex align-items-center gap-2">
+                <span class="checkout-step done"><i class="bi bi-check-lg"></i></span>
+                <span class="small text-muted">Giỏ hàng</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted"></i>
+            <div class="d-flex align-items-center gap-2">
+                <span class="checkout-step active">2</span>
+                <span class="small fw-semibold">Thanh toán</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted"></i>
+            <div class="d-flex align-items-center gap-2">
+                <span class="checkout-step pending">3</span>
+                <span class="small text-muted">Hoàn tất</span>
+            </div>
+        </div>
+
+        <h2 class="text-uppercase fw-bold mb-4 border-bottom pb-2">Thông tin giao hàng</h2>
+
+        <form asp-action="Checkout" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            @foreach (var productId in Model.SelectedProductIds)
+            {
+                <input type="hidden" name="SelectedProductIds" value="@productId" />
+            }
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 pt-3 pb-0">
+                            <h5 class="mb-0"><i class="bi bi-person-vcard text-warning me-2"></i>Thông tin người nhận</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="RecipientName" class="form-label"></label>
+                                    <input asp-for="RecipientName" class="form-control" placeholder="Nguyễn Văn A" />
+                                    <span asp-validation-for="RecipientName" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Phone" class="form-label"></label>
+                                    <input asp-for="Phone" class="form-control" placeholder="0901234567" />
+                                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <input asp-for="Email" class="form-control" readonly />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 pt-3 pb-0">
+                            <h5 class="mb-0"><i class="bi bi-geo-alt text-warning me-2"></i>Địa chỉ giao hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="City" class="form-label"></label>
+                                    <select asp-for="City" class="form-select">
+                                        <option value="">-- Chọn tỉnh/thành --</option>
+                                        <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                                        <option value="Hà Nội">Hà Nội</option>
+                                        <option value="Đà Nẵng">Đà Nẵng</option>
+                                        <option value="Cần Thơ">Cần Thơ</option>
+                                        <option value="Hải Phòng">Hải Phòng</option>
+                                        <option value="Khác">Tỉnh/thành khác</option>
+                                    </select>
+                                    <span asp-validation-for="City" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="District" class="form-label"></label>
+                                    <input asp-for="District" class="form-control" placeholder="Quận 1, Quận Bình Thạnh..." />
+                                    <span asp-validation-for="District" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="AddressLine" class="form-label"></label>
+                                    <input asp-for="AddressLine" class="form-control" placeholder="Số nhà, tên đường, phường/xã" />
+                                    <span asp-validation-for="AddressLine" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Notes" class="form-label"></label>
+                                    <textarea asp-for="Notes" class="form-control" rows="2"
+                                              placeholder="Giao giờ hành chính, gọi trước khi giao..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 pt-3 pb-0">
+                            <h5 class="mb-0"><i class="bi bi-credit-card text-warning me-2"></i>Phương thức thanh toán</h5>
+                        </div>
+                        <div class="card-body d-grid gap-2">
+                            <label class="payment-option border rounded p-3 d-flex align-items-start gap-3 mb-0">
+                                <input type="radio" asp-for="PaymentMethod" value="cod" class="form-check-input mt-1" />
+                                <div>
+                                    <span class="fw-semibold d-block">Thanh toán khi nhận hàng (COD)</span>
+                                    <small class="text-muted">Kiểm tra hàng trước khi thanh toán</small>
+                                </div>
+                            </label>
+                            <label class="payment-option border rounded p-3 d-flex align-items-start gap-3 mb-0">
+                                <input type="radio" asp-for="PaymentMethod" value="bank" class="form-check-input mt-1" />
+                                <div>
+                                    <span class="fw-semibold d-block">Chuyển khoản ngân hàng</span>
+                                    <small class="text-muted">Vietcombank · 0123456789 · ALICE STORE</small>
+                                </div>
+                            </label>
+                            <label class="payment-option border rounded p-3 d-flex align-items-start gap-3 mb-0">
+                                <input type="radio" asp-for="PaymentMethod" value="momo" class="form-check-input mt-1" />
+                                <div>
+                                    <span class="fw-semibold d-block">Ví MoMo</span>
+                                    <small class="text-muted">Quét mã hoặc chuyển đến SĐT đăng ký</small>
+                                </div>
+                            </label>
+                            <span asp-validation-for="PaymentMethod" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+                        <div class="card-header bg-dark text-warning fw-bold border-0">
+                            Đơn hàng của bạn (@Model.Cart.Items.Count sản phẩm)
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in Model.Cart.Items)
+                                {
+                                    var img = NormalizeImg(item.ImageUrl);
+                                    <li class="list-group-item px-3 py-2">
+                                        <div class="d-flex gap-3 align-items-center">
+                                            <img src="@img" alt="@item.Name" class="checkout-item-img"
+                                                 onerror="this.onerror=null;this.src='/images/placeholder.png';" />
+                                            <div class="flex-grow-1 min-width-0">
+                                                <div class="small fw-semibold text-truncate d-block">@item.Name</div>
+                                                <small class="text-muted">x@item.Quantity</small>
+                                            </div>
+                                            <span class="small fw-bold text-danger text-nowrap">
+                                                @((item.Price * item.Quantity).ToString("N0"))₫
+                                            </span>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-body border-top">
+                            <div class="d-flex justify-content-between mb-2 small">
+                                <span class="text-muted">Tạm tính</span>
+                                <span>@Model.Subtotal.ToString("N0")₫</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 small">
+                                <span class="text-muted">Phí vận chuyển</span>
+                                @if (Model.ShippingFee == 0)
+                                {
+                                    <span class="text-success">Miễn phí</span>
+                                }
+                                else
+                                {
+                                    <span>@Model.ShippingFee.ToString("N0")₫</span>
+                                }
+                            </div>
+                            @if (Model.Subtotal < 500_000m)
+                            {
+                                <p class="small text-muted mb-3">
+                                    <i class="bi bi-truck me-1"></i> Mua thêm @((500_000m - Model.Subtotal).ToString("N0"))₫ để được miễn phí ship
+                                </p>
+                            }
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="fw-bold">Tổng thanh toán</span>
+                                <span class="fs-5 fw-bold text-danger">@Model.GrandTotal.ToString("N0")₫</span>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-warning text-dark fw-bold btn-lg">
+                                    <i class="bi bi-bag-check me-1"></i> Đặt hàng
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i> Quay lại giỏ hàng
+                                </a>
+                            </div>
+                            <p class="small text-muted text-center mt-3 mb-0">
+                                <i class="bi bi-shield-check me-1"></i> Thông tin được bảo mật an toàn
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

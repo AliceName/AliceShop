@@ -1,0 +1,25 @@
+@model TranThiNga_2380601420_Tuan4_LTWeb.Models.Category
+
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<h2 class="mb-4">Sửa danh mục</h2>
+
+<form asp-action="Update" asp-route-id="@Model.Id" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Tên danh mục</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,29 @@
+@model TranThiNga_2380601420_Tuan4_LTWeb.Models.Product
+
+@{
+    var firstImage = Model.Images?.FirstOrDefault(i => !string.IsNullOrWhiteSpace(i.Url))?.Url ?? Model.ImageUrl;
+    if (!string.IsNullOrWhiteSpace(firstImage) && !firstImage.StartsWith("/"))
+    {
+        firstImage = "/" + firstImage;
+    }
+    var imgUrl = !string.IsNullOrWhiteSpace(firstImage) ? firstImage : "/images/placeholder.png";
+    var showHot = ViewData["ShowHot"] as bool? ?? false;
+}
+
+<div class="col">
+    <div class="card product-card-store p-2 shadow-sm border-0 h-100 position-relative">
+        @if (showHot)
+        {
+            <span class="badge bg-danger position-absolute m-2" style="z-index: 1;">HOT</span>
+        }
+        <img src="@imgUrl" class="card-img-top rounded" alt="@Model.Name" />
+        <div class="card-body px-1 d-flex flex-column">
+            <h5 class="card-title h6 fw-bold text-truncate" title="@Model.Name">@Model.Name</h5>
+            <div class="mb-2 mt-auto">
+                <span class="price text-danger fw-bold">@Model.Price.ToString("N0")₫</span>
+            </div>
+            <a asp-controller="Product" asp-action="Display" asp-route-id="@Model.Id"
+               class="btn btn-dark btn-sm w-100">Xem chi tiết</a>
+        </div>
+    </div>
+</div>

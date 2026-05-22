@@ -1,0 +1,46 @@
+@model TranThiNga_2380601420_Tuan4_LTWeb.Models.Category
+
+@{
+    ViewData["Title"] = "Delete Category";
+}
+
+<h2 class="mb-4">Xóa danh mục</h2>
+
+<h3 class="text-danger">Bạn có chắc muốn xóa danh mục này?</h3>
+
+<dl class="row mt-3">
+    <dt class="col-sm-2">Id</dt>
+    <dd class="col-sm-10">@Model.Id</dd>
+
+    <dt class="col-sm-2">Tên danh mục</dt>
+    <dd class="col-sm-10">@Model.Name</dd>
+</dl>
+
+@if (ViewBag.ProductCount != null && ViewBag.ProductCount > 0)
+{
+    <div class="alert alert-warning">
+        <strong>Cảnh báo:</strong> Danh mục này đang được sử dụng bởi <strong>@ViewBag.ProductCount</strong> sản phẩm. 
+        Nếu bạn xóa, tất cả sản phẩm thuộc danh mục này cũng sẽ bị xóa vĩnh viễn (bao gồm cả ảnh).
+    </div>
+    <form asp-action="Delete" method="post" class="mt-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+            <label class="form-check-label text-danger fw-bold" for="confirmDelete">
+                Tôi xác nhận xóa danh mục này và TẤT CẢ sản phẩm liên quan.
+            </label>
+        </div>
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+    </form>
+}
+else
+{
+    <form asp-action="Delete" method="post" class="mt-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+    </form>
+}
